@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '/api' });
+const BACKEND_URL =
+  import.meta.env.VITE_API_URL || 'https://hospitla-management-backend.onrender.com';
+
+const api = axios.create({
+  baseURL: `${BACKEND_URL}/api`,
+  withCredentials: false,
+  timeout: 60000, 
+});
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
@@ -41,9 +48,13 @@ export const downloadPDF = async (url, filename) => {
     const a = document.createElement('a');
     a.href = blobUrl;
     a.download = filename || 'document.pdf';
-    document.body.appendChild(a); a.click(); a.remove();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
     window.URL.revokeObjectURL(blobUrl);
-  } catch (err) { alert(err.response?.data?.message || 'Download failed'); }
+  } catch (err) {
+    alert(err.response?.data?.message || 'Download failed');
+  }
 };
 
 export default api;
